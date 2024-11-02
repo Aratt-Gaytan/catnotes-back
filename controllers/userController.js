@@ -1,27 +1,54 @@
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const {generateAuthToken} = require("../config/jwt")
 
 exports.register = async (req, res) => {
-    const { fullName, username, email, password } = req.body;
+  const { fullName, username, email, password } = req.body;
+  console.log(req.body); // (Optional for debugging)
 
-    try {
-        let user = await User.findOne({ email });
-        if (user) return res.status(400).json({ msg: 'User already exists' });
+  try {
+    let user = await User.findOne({ email });
+    if (user) return res.status(400).json({ msg: "User already exists" });
 
-        user = new User({ fullName, username, email });
+    let searchUsername = await User.findOne({ username });
+    if (searchUsername)
+      return res.status(400).json({ msg: "Username already taken" });
 
-        if (password) {
-            const salt = await bcrypt.genSalt(10);
-            user.password = await bcrypt.hash(password, salt);
-        }
+    user = new User({ fullName, username, email });
 
-        await user.save();
-        res.status(201).json({ msg: 'User registered' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server error');
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
     }
+
+    await user.save();
+    res.status(201).json({ msg: "User registered" });
+
+    // **Generate and send JWT upon successful registration (optional):**
+    const token = generateAuthToken(user); // (Defined below)
+    res.send({ token }); // Send token in response body
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 };
 
-// Aquí puedes agregar la lógica para Google OAuth2
+exports.login = async (req, res) => {
+  const { credentials, password } = req.body;
+
+  try {
+    let user = await User.findOne({  $or: [{ email: credentials }, { username: credentials } ] });
+    if (!user)
+      return res.status(403).json({ msg: "Invalid email or password" });
+
+    const isMatch = await bcrypt.compare(password, user.password); // Compare hashed passwords
+    if (!isMatch)
+      return res.status(403).json({ msg: "Invalid email or password" });
+
+    const token = generateAuthToken(user); // Generate JWT from user object
+    res.send({ token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+};

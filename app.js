@@ -2,12 +2,14 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const dotenv = require('dotenv');
+const cors = require('cors')
 dotenv.config();
 
 const app = express();
 connectDB();
 
 app.use(express.json());
+app.use(cors())
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/schedule', require('./routes/scheduleRoutes'));
 
