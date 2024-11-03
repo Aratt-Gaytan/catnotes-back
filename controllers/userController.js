@@ -20,13 +20,12 @@ exports.register = async (req, res) => {
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(password, salt);
     }
+    
+    const token = generateAuthToken(user); // (Defined below)
 
     await user.save();
-    res.status(201).json({ msg: "User registered" });
+    res.status(201).json({ msg: "User registered", token: token });
 
-    // **Generate and send JWT upon successful registration (optional):**
-    const token = generateAuthToken(user); // (Defined below)
-    res.send({ token }); // Send token in response body
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
