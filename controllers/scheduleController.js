@@ -21,9 +21,9 @@ exports.createSchedule = async (req, res) => {
 exports.getSchedule = async (req, res) => {
     const { user } = req.query.user;
 
-    try {
+    try { 
         const schedule = await Schedule.find({ userId: user });
-        res.json(schedule);
+        res.json({id: user, schedule});
     } catch (err) {
         console.error(err);
         res.status(500).send('Server error');
