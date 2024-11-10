@@ -26,7 +26,6 @@ exports.getSchedule = async (req, res) => {
     const schedule = await Schedule.find({ userId: userId });
 
     if (!schedule.length) {
-      console.log(`No schedules found for user: ${userId}`);
       return res.status(404).json({ message: "Schedule not found" });
     }
 
