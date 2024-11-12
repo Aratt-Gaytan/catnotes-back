@@ -20,6 +20,7 @@
     "html-to-image": "^1.11.11",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.2",
+    "node-cache": "^5.1.2",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "uuid": "^11.0.2"

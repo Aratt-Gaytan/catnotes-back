@@ -1,8 +1,13 @@
+// routes/userRoutes.js
 const express = require('express');
-const { register, login } = require('../controllers/userController');
+const UserService = require('../services/userService');
+const UserController = require('../controllers/userController');
+const validateUserExists = require('../middleware/validateUser');
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
+const userController = new UserController(UserService);
+
+router.post('/register', validateUserExists, (req, res) => userController.register(req, res));
+router.post('/login', (req, res) => userController.login(req, res));
 
 module.exports = router;
