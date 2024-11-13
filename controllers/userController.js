@@ -15,7 +15,7 @@ class UserController {
       res.status(201).json({ msg: 'User registered', token });
     } catch (err) {
       console.error(err);
-      res.status(500).json(error: 'Server error', msg: err);
+      res.status(500).json({error: 'Server error', msg: err});
     }
   }
 
@@ -27,7 +27,7 @@ class UserController {
       res.send({ token });
     } catch (err) {
       console.error(err);
-      res.status(500).json(error: 'Server error', msg: err);
+      res.status(500).json({error: 'Server error', msg: err});
 
     }
   }
