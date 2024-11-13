@@ -24,7 +24,7 @@ exports.getSchedule = async (req, res) => {
     const userId = new mongoose.Types.ObjectId(req.query.user);
 
     const schedule = await Schedule.find({ userId: userId });
-    console.log(schedule);
+    
     
     if (!schedule.length) {
       return res.status(404).json({ message: "Schedule not found" });
