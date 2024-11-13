@@ -4,8 +4,10 @@ const express = require('express');
 const Database = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
+cosnt Cors = require("cors")
 
 const app = express();
+app.use(Cors())
 const PORT = process.env.PORT || 5000;
 
 Database.connect();
