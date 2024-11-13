@@ -14,10 +14,13 @@ class ScheduleService {
     const cacheKey = `schedule_${userId}`;
     let schedule = cache.get(cacheKey);
     
-    if (!schedule) {
-      schedule = await Schedule.find({ userId });
-      cache.set(cacheKey, schedule);
+    let scheduleFromMongo = await Schedule.find({ userId });
+    if (schedule != scheduleFromMongo){
+      
+      schedule = scheduleFromMongo
     }
+    cache.set(cacheKey, schedule);
+
     return schedule;
   }
 
