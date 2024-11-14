@@ -21,6 +21,8 @@ class ScheduleService {
     }
     cache.set(cacheKey, schedule);
 
+    await NotificationService.sendNotification(data.userId, 'create');
+
     return schedule;
   }
 
@@ -36,6 +38,8 @@ class ScheduleService {
       ...updatedSubject,
     };
     await schedule.save();
+
+    await NotificationService.sendNotification(userId, 'update');
     return schedule;
   }
 }
