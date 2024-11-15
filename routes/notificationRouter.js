@@ -1,5 +1,7 @@
 // routes/scheduleRoutes.js
 const express = require('express');
+const validateToken = require('../middleware/validateToken');
+const ScheduleService = require('../services/scheduleService');
 const router = express.Router();
 
 const admin = require('firebase-admin');
