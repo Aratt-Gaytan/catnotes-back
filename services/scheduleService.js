@@ -22,7 +22,7 @@ class ScheduleService {
     }
     cache.set(cacheKey, schedule);
 
-    await NotificationService.sendNotification(data.userId, 'create');
+    await NotificationService.sendNotification(userId, 'create');
 
     return schedule;
   }
