@@ -1,5 +1,18 @@
+require('dotenv').config();
+
 const User = require('../models/User');
 const firebaseAdmin = require('firebase-admin'); // Ejemplo con Firebase Cloud Messaging
+
+
+// Inicializar Firebase usando las variables de entorno
+const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_KEY);
+
+if (!firebaseAdmin.apps.length) {
+  firebaseAdmin.initializeApp({
+    credential: firebaseAdmin.credential.cert(serviceAccount),
+  });
+}
+
 
 class NotificationService {
   async sendNotification(userId, notificationType) {
