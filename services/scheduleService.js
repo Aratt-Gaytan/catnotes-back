@@ -1,6 +1,6 @@
 // services/scheduleService.js
 const Schedule = require('../models/Schedule');
-const NotificationService = require('../services/notificationService')
+//const NotificationService = require('../services/notificationService')
 const NodeCache = require('node-cache');
 const cache = new NodeCache({ stdTTL: 3600 });
 
@@ -22,7 +22,7 @@ class ScheduleService {
     }
     cache.set(cacheKey, schedule);
 
-    await NotificationService.sendNotification(userId, 'create');
+    //await NotificationService.sendNotification(userId, 'create');
 
     return schedule;
   }
@@ -40,7 +40,7 @@ class ScheduleService {
     };
     await schedule.save();
 
-    await NotificationService.sendNotification(userId, 'update');
+    //await NotificationService.sendNotification(userId, 'update');
     return schedule;
   }
 }
