@@ -5,7 +5,7 @@ exports.generateAuthToken = (user) => {
     const payload = { user: { id: user._id } }; // Include only essential user data
     const secret = process.env.JWT_SECRET; // Use a strong environment variable for secret
 
-    return jwt.sign(payload, secret, { expiresIn: "1h" }); // Set appropriate expiry time
+    return jwt.sign(payload, secret, { expiresIn: "12h" }); // Set appropriate expiry time
 };
 
 // Function to verify JWT
