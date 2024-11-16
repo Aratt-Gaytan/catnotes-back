@@ -1,6 +1,4 @@
-// services/scheduleService.js
 const Schedule = require('../models/Schedule');
-//const NotificationService = require('../services/notificationService')
 const NodeCache = require('node-cache');
 const cache = new NodeCache({ stdTTL: 3600 });
 
@@ -14,17 +12,27 @@ class ScheduleService {
   async getSchedule(userId) {
     const cacheKey = `schedule_${userId}`;
     let schedule = cache.get(cacheKey);
-    
-    let scheduleFromMongo = await Schedule.find({ userId });
-    if (schedule != scheduleFromMongo){
-      
-      schedule = scheduleFromMongo
-    }
-    cache.set(cacheKey, schedule);
 
-    //await NotificationService.sendNotification(userId, 'create');
+    if (!schedule) {
+      schedule = await Schedule.find({ userId });
+      cache.set(cacheKey, schedule);
+    }
 
     return schedule;
+  }
+
+  // Método para obtener los subjects de un solo día
+  async getSubjectsByDay(userId, day) {
+    const cacheKey = `schedule_${userId}_${day}`;
+    let schedule = cache.get(cacheKey);
+
+    if (!schedule) {
+      schedule = await Schedule.findOne({ userId, day });
+      if (!schedule) throw new Error('No subjects found for this day');
+      cache.set(cacheKey, schedule);
+    }
+
+    return schedule.subjects;
   }
 
   async updateSubject(userId, day, subjectId, updatedSubject) {
@@ -39,8 +47,6 @@ class ScheduleService {
       ...updatedSubject,
     };
     await schedule.save();
-
-    //await NotificationService.sendNotification(userId, 'update');
     return schedule;
   }
 }

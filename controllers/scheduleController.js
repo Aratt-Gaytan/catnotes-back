@@ -1,70 +1,48 @@
-const Schedule = require("../models/Schedule");
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const scheduleService = require('../services/scheduleService');
 
 exports.createSchedule = async (req, res) => {
   try {
     const { day, subjects, userId } = req.body;
 
-    const newSchedule = new Schedule({
-      userId: userId, // Assuming `user.id` is the actual user ID
-      day,
-      subjects,
-    });
-
-    await newSchedule.save();
+    const newSchedule = await scheduleService.createSchedule({ userId, day, subjects });
     res.status(201).json(newSchedule);
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server Error"); // More specific error message
+    res.status(500).send('Server Error');
   }
 };
 
-exports.getSchedule = async (req, res) => {
+// Obtener todos los subjects de un usuario para un día específico
+exports.getSubjectsByDay = async (req, res) => {
   try {
-    const userId = new mongoose.Types.ObjectId(req.query.user);
+    const { userId, day } = req.query;
 
-    const schedule = await Schedule.find({ userId: userId });
-    
-    
-    if (!schedule.length) {
-      return res.status(404).json({ message: "Schedule not found" });
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
     }
 
-    res.json({ id: userId, schedule });
+    const subjects = await scheduleService.getSubjectsByDay(userId, day);
+
+    if (!subjects || !subjects.length) {
+      return res.status(404).json({ message: 'No subjects found for this day' });
+    }
+
+    res.json({ day, subjects });
   } catch (err) {
-    console.error("Error fetching schedule:", err);
-    res.status(500).send("Server Error"); // More specific error message
+    console.error('Error fetching subjects by day:', err);
+    res.status(500).send('Server Error');
   }
 };
 
 exports.updateSubject = async (req, res) => {
-  const { day, subjectId, updatedSubject, user } = req.body;
+  const { userId, day, subjectId, updatedSubject } = req.body;
 
   try {
-    const schedule = await Schedule.findOne({ userId: user.id, day });
-
-    if (!schedule) {
-      return res.status(404).json({ msg: "Schedule not found" });
-    }
-
-    const subjectIndex = schedule.subjects.findIndex(
-      (subject) => subject.subjectId === subjectId
-    );
-
-    if (subjectIndex === -1) {
-      return res.status(404).json({ msg: "Subject not found" });
-    }
-
-    // Actualiza el subject específico
-    schedule.subjects[subjectIndex] = {
-      ...schedule.subjects[subjectIndex],
-      ...updatedSubject,
-    };
-
-    await schedule.save();
-    res.json(schedule);
+    const updatedSchedule = await scheduleService.updateSubject(userId, day, subjectId, updatedSubject);
+    res.json(updatedSchedule);
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error");
+    res.status(500).send('Server Error');
   }
 };
