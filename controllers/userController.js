@@ -35,8 +35,8 @@ class UserController {
     }
   }
 
-  
-  async googleLogin(req, res) {
+
+    async googleLogin(req, res) {
     const { googleToken } = req.body;
     try {
       // Verificar el token de Google
@@ -46,27 +46,33 @@ class UserController {
       });
 
       const payload = ticket.getPayload();
-      const { email, name } = payload;
+      const { sub: googleId, email, name } = payload;
 
       // Buscar si el usuario ya existe en tu base de datos
-      let user = await User.findOne({ email });
+      let user = await User.findOne({ $or: [{ email }, { googleId }] });
 
       if (!user) {
         // Si no existe, crear un nuevo usuario
-        user = await this.userService.createUser({ fullName: name, email });
+        const username = email.split('@')[0]; // Generar un username básico
+        user = new User({
+          fullName: name,
+          username,
+          email,
+          googleId,
+        });
+        await user.save();
       }
 
       // Generar un token JWT personalizado
       const token = generateAuthToken(user);
-      res.status(200).json({ token });
+      res.status(200).json({ token, msg: 'User authenticated with Google' });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'Google authentication failed', msg: err.message });
     }
   }
 
-
-
+  
 }
 
 
