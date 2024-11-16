@@ -9,7 +9,7 @@ router.post('/schedule', validateToken, async (req, res) => {
   const schedule = await ScheduleService.createSchedule({ day, subjects, userId: req.user.id });
   res.status(201).json(schedule);
 });
- 
+
 router.get('/schedule', validateToken, async (req, res) => {
   const schedule = await ScheduleService.getSchedule(req.user.id);
   res.json(schedule);

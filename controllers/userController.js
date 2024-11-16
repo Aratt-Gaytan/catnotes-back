@@ -1,6 +1,9 @@
 // controllers/userController.js
-const bcrypt = require('bcryptjs');
+const { OAuth2Client } = require('google-auth-library');
+const User = require('../models/User');
 const { generateAuthToken } = require('../config/jwt');
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 class UserController {
   constructor(userService) {
@@ -31,6 +34,42 @@ class UserController {
 
     }
   }
+
+  
+  async googleLogin(req, res) {
+    const { googleToken } = req.body;
+    try {
+      // Verificar el token de Google
+      const ticket = await googleClient.verifyIdToken({
+        idToken: googleToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+
+      const payload = ticket.getPayload();
+      const { email, name } = payload;
+
+      // Buscar si el usuario ya existe en tu base de datos
+      let user = await User.findOne({ email });
+
+      if (!user) {
+        // Si no existe, crear un nuevo usuario
+        user = await this.userService.createUser({ fullName: name, email });
+      }
+
+      // Generar un token JWT personalizado
+      const token = generateAuthToken(user);
+      res.status(200).json({ token });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Google authentication failed', msg: err.message });
+    }
+  }
+
+
+
 }
+
+
+
 
 module.exports = UserController;
