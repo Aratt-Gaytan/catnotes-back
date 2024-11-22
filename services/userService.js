@@ -1,10 +1,10 @@
-// services/userService.js
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const scheduleService = require('./scheduleService'); // Importamos el ScheduleService
 
 class UserService {
-  async createUser({ fullName, username, email, password }) {
-    const user = new User({ fullName, username, email });
+  async createUser({ fullName, username, email, password, googleId }) {
+    const user = new User({ fullName, username, email, googleId });
 
     if (password) {
       const salt = await bcrypt.genSalt(10);
@@ -12,6 +12,10 @@ class UserService {
     }
 
     await user.save();
+
+    // Crear los horarios por defecto para los 7 días
+    await scheduleService.createDefaultSchedules(user._id);
+
     return user;
   }
 

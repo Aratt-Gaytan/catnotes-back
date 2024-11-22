@@ -1,11 +1,10 @@
-const mongoose = require('mongoose');
 const scheduleService = require('../services/scheduleService');
 
 exports.createSchedule = async (req, res) => {
   try {
-    const { day, subjects, userId } = req.body;
+    const { day } = req.body;
 
-    const newSchedule = await scheduleService.createSchedule({ userId, day, subjects });
+    const newSchedule = await scheduleService.createSchedule({ day });
     res.status(201).json(newSchedule);
   } catch (err) {
     console.error(err);
@@ -13,36 +12,79 @@ exports.createSchedule = async (req, res) => {
   }
 };
 
-// Obtener todos los subjects de un usuario para un día específico
-exports.getSubjectsByDay = async (req, res) => {
-  try {
-    const { userId, day } = req.query;
 
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
+exports.addSubject = async (req, res) => {
+  try {
+    const { scheduleId, subject } = req.body;
+
+    const newSubject = await scheduleService.addSubject(scheduleId, subject);
+    res.status(201).json({ message: 'Subject added successfully', subject: newSubject });
+  } catch (error) {
+    console.error('Error adding subject:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+
+exports.updateSubject = async (req, res) => {
+  try {
+    const { subjectId } = req.params; // ID del subject a actualizar
+    const updatedSubject = req.body; // Nuevos datos del subject
+
+    if (!subjectId) {
+      return res.status(400).json({ message: 'Subject ID is required' });
     }
 
-    const subjects = await scheduleService.getSubjectsByDay(userId, day);
+    const subject = await scheduleService.updateSubject(subjectId, updatedSubject);
 
-    if (!subjects || !subjects.length) {
+    if (!subject) {
+      return res.status(404).json({ message: 'Subject not found' });
+    }
+
+    res.status(200).json({ message: 'Subject updated successfully', subject });
+  } catch (error) {
+    console.error('Error updating subject:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+
+exports.deleteSubject = async (req, res) => {
+  try {
+    const { subjectId } = req.params;
+
+    if (!subjectId) {
+      return res.status(400).json({ message: 'Subject ID is required' });
+    }
+
+    const result = await scheduleService.deleteSubject(subjectId);
+
+    if (!result) {
+      return res.status(404).json({ message: 'Subject not found' });
+    }
+
+    res.status(200).json({ message: 'Subject deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting subject:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+
+
+exports.getSubjectsByDay = async (req, res) => {
+  try {
+    const { day } = req.query;
+
+    const subjects = await scheduleService.getSubjectsByDay(day);
+
+    if (!subjects.length) {
       return res.status(404).json({ message: 'No subjects found for this day' });
     }
 
     res.json({ day, subjects });
   } catch (err) {
     console.error('Error fetching subjects by day:', err);
-    res.status(500).send('Server Error');
-  }
-};
-
-exports.updateSubject = async (req, res) => {
-  const { userId, day, subjectId, updatedSubject } = req.body;
-
-  try {
-    const updatedSchedule = await scheduleService.updateSubject(userId, day, subjectId, updatedSubject);
-    res.json(updatedSchedule);
-  } catch (err) {
-    console.error(err);
     res.status(500).send('Server Error');
   }
 };
