@@ -7,8 +7,8 @@ const notificationRoutes = require('./notificationRouter');
 const router = express.Router();
 
 // Agregar rutas con prefijos
-router.use('/user', userRoutes);
-router.use('/schedule', scheduleRoutes);
-router.use('/notification', notificationRoutes);
+router.use('/', userRoutes);
+router.use('/', scheduleRoutes);
+router.use('/', notificationRoutes);
 
 module.exports = router;

@@ -13,8 +13,6 @@ class UserService {
 
     await user.save();
 
-    // Crear los horarios por defecto para los 7 días
-    await scheduleService.createDefaultSchedules(user._id);
 
     return user;
   }

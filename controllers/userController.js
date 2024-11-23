@@ -23,17 +23,21 @@ class UserController {
 
   async googleLogin(req, res) {
     const { googleToken } = req.body;
+
+    
     try {
       const ticket = await googleClient.verifyIdToken({
         idToken: googleToken,
         audience: process.env.GOOGLE_CLIENT_ID,
       });
-
+  
       const payload = ticket.getPayload();
       const { sub: googleId, email, name } = payload;
-
+  
+      // Buscar el usuario por correo o Google ID
       let user = await User.findOne({ $or: [{ email }, { googleId }] });
-
+  
+      // Si no existe, crearlo
       if (!user) {
         const username = email.split('@')[0];
         user = await this.userService.createUser({
@@ -43,7 +47,8 @@ class UserController {
           googleId,
         });
       }
-
+  
+      // Generar un JWT
       const token = generateAuthToken(user);
       res.status(200).json({ token, msg: 'User authenticated with Google' });
     } catch (err) {

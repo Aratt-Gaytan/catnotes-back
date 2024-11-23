@@ -2,10 +2,14 @@ const jwt = require("jsonwebtoken");
 
 // Function to generate JWT (place outside of exported functions):
 exports.generateAuthToken = (user) => {
-    const payload = { user: { id: user._id } }; // Include only essential user data
+    const payload = {
+        id: user._id,
+        email: user.email,
+        fullName: user.fullName,
+    };
     const secret = process.env.JWT_SECRET; // Use a strong environment variable for secret
 
-    return jwt.sign(payload, secret, { expiresIn: "12h" }); // Set appropriate expiry time
+    return jwt.sign(payload, secret, { expiresIn: "24h" }); // Set appropriate expiry time
 };
 
 // Function to verify JWT

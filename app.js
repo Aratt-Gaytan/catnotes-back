@@ -3,6 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const axios = require('axios');
+
 const Database = require('./config/db');
 
 // Importar rutas
@@ -21,6 +23,16 @@ app.use(express.json());
 
 // Rutas
 app.use('/api', routes);
+
+app.get('/api/horoscope/:sign', async (req, res) => {
+  try {
+    const response = await axios.get(`http://ohmanda.com/api/horoscope/${req.params.sign}/`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
 
 // Middleware para manejo de errores
 app.use((err, req, res, next) => {
