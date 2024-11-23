@@ -24,13 +24,14 @@ class UserController {
   async googleLogin(req, res) {
     const { googleToken } = req.body;
 
+    console.log(googleToken);
     
     try {
       const ticket = await googleClient.verifyIdToken({
         idToken: googleToken,
         audience: process.env.GOOGLE_CLIENT_ID,
       });
-  
+      
       const payload = ticket.getPayload();
       const { sub: googleId, email, name } = payload;
   
