@@ -43,11 +43,14 @@ class UserController {
     try {
       const { googleId, name, email } = req.body.data;
   
+      console.log(req.body);
       
   
       // Buscar el usuario por correo o Google ID
       let user = await User.findOne({ $or: [{ email: email }, { googleId : googleId}] });
-  
+      
+      console.log(user);
+      
       // Si no existe, crearlo
       if (!user) {
         const username = email.split('@')[0];
@@ -67,6 +70,10 @@ class UserController {
       res.status(500).json({ error: 'Google authentication failed', msg: err.message });
     }
   }
+  
+
+
+
   async login(req, res) {
     const { credentials, password } = req.body; // Puede ser email o username
 
