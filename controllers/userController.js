@@ -18,7 +18,7 @@ class UserController {
   }
 
   async register(req, res) {
-    const { fullName, username, email, password } = req.body.data;
+    const { fullName, username, email, password } = req.body;
   
     try {
       const hashedPassword = await hashPassword(password);
