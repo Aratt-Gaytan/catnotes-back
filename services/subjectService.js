@@ -52,8 +52,11 @@ class SubjectService {
   async addSubject(userId, scheduleId, subjectData) {
 
 
-    console.log(subjectData);
+    console.log(subjectData.subject.scheduleId);
+    const day = await Schedule.findOne({day: subjectData.subject.scheduleId})
+    console.log(day);
     
+    subjectData.subject.scheduleId = day._id
     // Crear el nuevo subject
     const newSubject = new Subject({
       ...subjectData.subject,

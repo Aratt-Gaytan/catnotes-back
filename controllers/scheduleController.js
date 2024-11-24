@@ -1,5 +1,6 @@
 const scheduleService = require('../services/scheduleService');
 const subjectService = require('../services/subjectService');
+const Schedule = require('../models/Schedule')
 
 const SubjectService = require('../services/subjectService');
 
