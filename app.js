@@ -18,7 +18,7 @@ Database.connect();
 
 // Middleware
 app.use(helmet()); // Agrega seguridad en cabeceras HTTP
-app.use(cors({ origin: process.env.CLIENT_URL || '*' })); // Configuración de CORS
+app.use(cors()); // Configuración de CORS
 app.use(express.json());
 
 // Rutas
