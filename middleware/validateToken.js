@@ -15,9 +15,11 @@ module.exports = async (req, res, next) => {
     
     // Asignar el usuario decodificado al objeto req
     req.user = { id: decoded.id }; // Asegúrate de que el token contenga `id`
-
+    // console.log(req.user)
     // Opcional: Verificar si el usuario existe en la base de datos
     const userExists = await User.findById(req.user.id);
+    // console.log(userExists);
+    
     if (!userExists) {
       return res.status(401).json({ message: 'User does not exist' });
     }
